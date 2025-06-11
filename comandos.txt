@@ -1,0 +1,33 @@
+## Ficheros  de salida estandar ##
+/dev/stdin
+/dev/stdout
+/dev/stderr
+Ejemplos de redireccionamiento de estandar output:
+	- ls -l / > dir.txt
+	- echo "Hola mundo" >> dir.txt
+
+File descriptor:
+	Un file descriptor (descriptor de archivo) en Linux (y en sistemas Unix en general) es un número 
+	entero que identifica de forma única un archivo abierto dentro de un proceso.
+Ejemplos de redireccionamiento de estandar error
+	- ls -l asdasd 2> err.txt
+
+Ejemplo de redireccionamiento standar (output, error)
+	- ls -lah > std_out_err.txt 2>&1
+	- ls -lah  &> std.txt --> [Version mas moderna]
+	
+Ejemplo de redireccionamiento a /dev/null
+	- find /var/log -name auth.log 2> /dev/null
+
+Ejemplo de redireccionamiento stdin
+	- cat < std_out_err.txt
+	
+## pipelines ##
+Ejemplos Parte 1
+	- ls / | sort | less
+	- ls /bin /usr/bin | sort | uniq | less
+	- ls /bin /usr/bin | sort | uniq | wc -l
+Ejemplos Parte 2
+	- grep : grep tolen /var/log/auth.log
+	- tail: tail /var/log/auth.log
+	

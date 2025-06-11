@@ -1,0 +1,102 @@
+## Permisos y usuarios ##
+Comando id -> muestra la identidad del usuarios
+	- Ejemplo: uid=1000(tolen) gid=1000(tolen) groups=1000(tolen),4(adm),20(dialout),24(cdrom),25(floppy),27(sudo),29(audio),30(dip),44(video),46(plugdev),100(users),107(netdev),1001(docker)
+
+/etc/passwd -> Informacion de todos los usuarios
+/etc/shadow -> Contrasenas hasheadas de los usuarios
+/etc/group -> Informacion de grupos
+
+## Modificar permisos ##
+Modo octal ejemplos
+	- chmod 646 test.log -> -rw-r--rw-
+
+Modo simbolico
+	- chmod a=r test.log
+	- chmod u+w,g+w test.log
+	- chmod g-w test.log
+	- chmod g+x,o+x test.log
+	
+	
+## Cambiar de identidad ##
+
+# Comando su:
+# Cambia de usuario en la sesión actual. Si no se especifica usuario, cambia a root.
+# Requiere la contraseña del usuario al que deseas cambiar.
+# Ejemplos:
+su testuser                     # Cambia al usuario 'testuser'
+su -c 'chmod o+r,o+x testuser' testuser  # Ejecuta un comando como 'testuser'
+
+# Comando sudo:
+# Ejecuta un solo comando con privilegios elevados (por defecto como root).
+# Requiere la contraseña del usuario actual (si está autorizado en /etc/sudoers).
+# Ejemplo:
+sudo cat /etc/shadow           # Muestra el archivo shadow como superusuario
+
+
+## sudoers ##
+	- directorio: /etc/sudoers
+
+modificar fichero sudoer
+	- sudo visudo /etc/sudoers.d/config
+	- Ejemplo: testuser ALL=(ALL:ALL) /usr/bin/cat
+
+Nota: no es recomendable hacer este cambio en el fichero de sudoers.d/config
+	  se recomienda agregar al usuario en un grupo con el comando usermod
+
+## Conceder permisos sudo a un usuario ##
+### Opción 1: Agregar el usuario al grupo `sudo`
+Si en `/etc/sudoers` existe la línea:
+
+    %sudo   ALL=(ALL:ALL) ALL
+
+Entonces solo necesitas agregar el usuario al grupo `sudo`:
+
+    sudo usermod -aG sudo nombre_usuario
+
+Después de esto, el usuario podrá usar `sudo` para ejecutar comandos como superusuario.
+
+🔁 Importante: el usuario debe cerrar sesión y volver a iniciar para que el cambio tenga efecto.
+
+---
+
+### Opción 2: Crear una regla personalizada en /etc/sudoers.d/
+
+Para un control más granular o evitar modificar directamente `/etc/sudoers`, puedes crear un archivo personalizado:
+
+    sudo visudo -f /etc/sudoers.d/nombre_usuario
+
+Y agregar esta línea:
+
+    nombre_usuario ALL=(ALL:ALL) ALL
+
+Esto da permisos sudo completos al usuario. También puedes limitar los comandos:
+
+    nombre_usuario ALL=(ALL) NOPASSWD: /sbin/reboot
+
+Con esto, solo podrá ejecutar el comando `/sbin/reboot` sin que se le pida contraseña.
+
+---
+
+### ¿Cuál usar?
+
+- ✅ **Grupo `sudo`**: útil para accesos administrativos estándar.
+- ✅ **Archivo `sudoers.d/`**: ideal para personalizar privilegios por usuario o mantener configuraciones organizadas.
+
+
+####### Gestion usuarios y grupos #######
+	- Crear usuarios                           : sudo adduser <username>
+	- Crear un nuevo grupo                     : sudo addgroup <groupname>
+	- Visualizar todos los grupos              : cat /etc/group
+	- Visualizar todos los grupos del usuario  : groups <username>
+	- Agregar un usuario a un nuevo grupo      : sudo usermod -a -G <groupname> <username>
+	- Cambiar de grupo primario a un usuario   : sudo usermod -g <groupname> <username>
+	- Eliminar un usuario                      : sudo deluser <username>
+	- Eliminar un grupo                        : sudo delgroup <groupname>
+	
+###### Cambio de propietario ######
+	- Cambiar de usuario propietario un fichero              : sudo chown testuser test.txt
+	- Cambiar de grupo a un fichero                          : sudo chown :testuser test.txt
+	- Cambiar de usuario propietario y de grupo un fichero   : sudo chown tolen:tolen test.txt
+
+
+

@@ -1,0 +1,73 @@
+### Procesos en linux ###
+	- Visualizar los procesos activos en el sistena en determinado momento  : ps aux
+	- Estado de los procesos en tiempo real                                 : top
+	Nota: seleccionar letra "o" y filtrar por columna, ejemplo PID=238,USER=tolen,%MEM>0.2
+
+##### Interrupcion de procesos #####
+	- ctrl + c
+	- ctrl + z  -> Se detiene y se manda a segundo plano
+	
+###### Procesos en segundo plano ######
+	-Ejemplo : ./demonio.sh & -> el simbolo "&" pone en segundo plano el proceso
+	- jobs -> muestra los procesos en segundo plano
+	- fg %1 -> Vuelve el proceso a primer plano
+	
+Las señales permiten controlar procesos desde la línea de comandos. Algunas detienen, otras reanudan y algunas terminan por completo el proceso.
+
+**Señales comunes:**
+- kill -20 <PID>  → Envía SIGTSTP: Pausa el proceso, como Ctrl+Z. Puede reanudarse con fg o bg.
+- kill -18 <PID>  → Envía SIGCONT: Reanuda un proceso previamente pausado con SIGSTOP o SIGTSTP.
+- kill -19 <PID>  → Envía SIGSTOP: Pausa el proceso de forma forzosa. No puede ser ignorado ni manejado.
+- kill -9 <PID>   → Envía SIGKILL: Mata el proceso inmediatamente. No puede ser atrapado ni detenido limpiamente.
+---
+
+Ejemplos prácticos:
+
+# Iniciar un proceso en segundo plano
+sleep 1000 &
+
+# Pausar el proceso forzosamente (SIGSTOP)
+kill -19 $!
+
+# Reanudar el proceso (SIGCONT)
+kill -18 $!
+
+# Iniciar otro proceso en segundo plano
+sleep 1000 &
+
+# Pausar el proceso de forma equivalente a Ctrl+Z (SIGTSTP)
+kill -20 $!
+
+# Reanudar en primer plano (foreground)
+fg
+
+# Iniciar un proceso y matarlo directamente (SIGKILL)
+sleep 1000 &
+kill -9 $!
+
+---
+
+Resumen rápido:
+
+| Señal   | Número | Acción                | Reanudable | Puede ser manejada |
+|---------|--------|------------------------|------------|---------------------|
+| SIGTSTP | 20     | Pausa (como Ctrl+Z)     | Sí         | Sí (puede ser ignorada) |
+| SIGCONT | 18     | Reanuda proceso         | —          | Sí                  |
+| SIGSTOP | 19     | Pausa forzosamente      | Sí         | No                  |
+| SIGKILL | 9      | Mata el proceso         | No         | No                  |
+
+---
+
+Nota: Las señales SIGSTOP y SIGKILL no pueden ser ignoradas ni gestionadas por el proceso. Se usan cuando necesitas forzar una pausa o una terminación.
+
+
+##### Gestion de servicios #####
+	- Listar todos los servicios     : systemctl list-units --type=service
+	- Detener un servicio            : sudo systemctl stop <servicename>
+	- Consultar status del servicio  : sudo systemctl status <servicename>
+	- Iniciar un servicio            : sudo systemctl start <servicename>
+	- Reiniciar un servicio          : sudo systemctl restart <servicename>
+
+
+	
+	
